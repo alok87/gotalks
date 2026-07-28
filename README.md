@@ -6,7 +6,7 @@ Terminal talks, built with [presenterm](https://github.com/mfontanini/presenterm
 
 | Talk | About |
 | --- | --- |
-| [Go Software Design](talks/go-software-design.md) | ~1 hr. Deep modules, composition vs inheritance, interfaces, packages, DI, errors, testing. For SDEs arriving from OOP languages. |
+| [Go Software Design](talks/go-software-design.md) | ~1 hr. Deep modules, composition vs inheritance, interfaces, packages, DI, errors, testing. |
 
 The talk files are plain markdown - GitHub renders them readable as-is
 (presenterm directives like `<!-- pause -->` are invisible comments).
