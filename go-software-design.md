@@ -169,9 +169,30 @@ No `class`. No `extends`. No `implements`. No `super`. No `this`. No exceptions.
 
 <!-- pause -->
 
+All four, in the standard library you already use:
+
+```go
+type Buffer struct {                      // group data: a struct    (bytes)
+    buf []byte
+}
+
+func (b *Buffer) Write(p []byte) (int, error)   // add behaviour: a method
+
+type Writer interface {                   // swap implementations    (io)
+    Write(p []byte) (int, error)
+}
+
+type ReadWriter struct {                  // reuse: put it inside yours (bufio)
+    *Reader
+    *Writer
+}
+```
+
+<!-- pause -->
+
 **If it has the methods, it fits.** No declaration anywhere. And nothing ever inherits fields.
 
-<!-- speaker_note: 'Ask who has written Java. Be kind about it - they will reach for a hierarchy for the first month, and that is normal. The last line is the big one: in Java a class fits an interface only if the author wrote implements when writing the class. In Go, a type fits because it HAS the method - so an interface written next year by another team is satisfied by your existing type with nobody editing anything.' -->
+<!-- speaker_note: 'Ask who has written Java. Be kind about it - they will reach for a hierarchy for the first month, and that is normal. The last line is the big one: in Java a class fits an interface only if the author wrote implements when writing the class. In Go, a type fits because it HAS the method. The snippet is the proof from the stdlib: bytes.Buffer has Write, so it IS an io.Writer - bytes never imports io to say so. And bufio.ReadWriter is real stdlib code reusing Reader and Writer by embedding them. One snippet, three packages, zero declarations.' -->
 
 <!-- end_slide -->
 
