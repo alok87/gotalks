@@ -25,10 +25,5 @@ Speaker notes: `presenterm -x --publish-speaker-notes <talk>` on the projector,
 ## Verify after editing
 
 ```sh
-./verify.sh talks/go-software-design.md
+./verify.sh
 ```
-
-Gates: slide layout at 120x40, `gofmt -e` on every snippet, `go run` on every `+exec`
-block, and a render check that `/// ` hidden lines stay hidden. Editing gotchas
-(YAML speaker notes, 84-char code lines, 46-char code lines inside columns) are
-documented in `verify.sh`'s header.
