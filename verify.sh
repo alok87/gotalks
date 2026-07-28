@@ -13,9 +13,14 @@
 #   - presenterm's Go hidden-line prefix (`/// `) is stripped, as presenterm does
 # Blocks are parsed, not type-checked, so a snippet may reference identifiers
 # that live on a different slide.
+# Editing gotchas for the decks (measured against presenterm 0.16 at 120x40):
+#   - speaker_note comment bodies are YAML: keep them single-quoted ('' escapes ')
+#   - code lines <= 84 chars; code blocks and blockquotes never wrap
+#   - inside a [1,1] column_layout: bullets <= 48 chars, code lines <= 46
+#   - hidden +exec setup lines use the Go prefix `/// ` (a bare /// renders)
 set -uo pipefail
 
-DECK="${1:-$(dirname "$0")/go-properly.md}"
+DECK="${1:-$(dirname "$0")/talks/go-software-design.md}"
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 

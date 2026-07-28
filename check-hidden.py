@@ -33,7 +33,7 @@ def render(md: str) -> str:
 
 
 def main() -> int:
-    decks = sys.argv[1:] or [str(HERE / "go-properly-1hr.md"), str(HERE / "go-properly.md")]
+    decks = sys.argv[1:] or [str(HERE / "talks" / "go-software-design.md")]
     bad = 0
     for deck in decks:
         src = pathlib.Path(deck).read_text()

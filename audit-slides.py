@@ -46,7 +46,7 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--cols", type=int, default=120)
     ap.add_argument("--rows", type=int, default=40)
-    ap.add_argument("deck", nargs="?", default=str(HERE / "go-properly.md"))
+    ap.add_argument("deck", nargs="?", default=str(HERE / "talks" / "go-software-design.md"))
     args = ap.parse_args()
 
     src = pathlib.Path(args.deck).read_text()

@@ -6,7 +6,7 @@
 set -uo pipefail
 COLS="${1:-120}"
 ROWS="${2:-40}"
-DECK="${3:-$(dirname "$0")/go-properly.md}"
+DECK="${3:-$(dirname "$0")/talks/go-software-design.md}"
 HERE="$(cd "$(dirname "$0")" && pwd)"
 
 python3 "$HERE/ptyrun.py" --cols "$COLS" --rows "$ROWS" --timeout 60 -- \
