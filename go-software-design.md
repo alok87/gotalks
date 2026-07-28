@@ -290,13 +290,27 @@ u.Call()    -> receiver=main.Gateway retries=3   ← Gateway's, as promised
 
 # Want the behaviour to change? Use an interface.
 
+Same `UPI` as before - but now `Call` **asks for behaviour** instead of embedding:
+
 ```go
 type Retrier interface{ Retries() int }
 
-func Call(r Retrier) string { ... }   // Call(u) -> retries=0 ✓
+func Call(r Retrier) string {
+    return fmt.Sprintf("receiver=%T retries=%d", r, r.Retries())
+}
 ```
 
-You passed the **whole UPI**, so `Retries()` is UPI's.
+<!-- pause -->
+
+Put both versions next to each other:
+
+```text
+u.Call()   -> receiver=main.Gateway retries=3   embedding: the inner value
+Call(u)    -> receiver=main.UPI     retries=0   interface: the WHOLE value
+```
+
+You passed the **whole UPI**, so `Retries()` is UPI's. That is the difference:
+embedding forwards to a field; an interface carries your actual type.
 
 <!-- pause -->
 
