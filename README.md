@@ -50,20 +50,22 @@ presenterm --export-pdf go-software-design.md    # needs: pip install weasyprint
 
 ## What it covers
 
-47 slides: 38 content + 8 part dividers + title. Dividers carry a time budget
-(`Part 4 · 11 min`) so you can tell mid-talk whether you're behind. Budgets sum to ~59 min -
-tight for an hour; the three self-contained slides to skip if running long are *How to carve
-a new package*, *Small interfaces compose*, and *SOLID*.
+52 slides: 42 content + 9 part dividers + title. Dividers carry a time budget
+(`Part 4 · 10 min`) so you can tell mid-talk whether you're behind. Budgets sum to 60 min -
+a full hour with no slack; the self-contained slides to skip if running long are *How to
+carve a new package*, *Small interfaces compose*, *SOLID*, and *The review card* (it works
+as a handout).
 
 | Part | Min | Topics |
 | --- | --- | --- |
-| 1 | 6 | **A small door to a big room** - Ousterhout's deep modules, `io.Writer`, deep vs shallow `Store`, information leakage |
+| 1 | 5 | **A small door to a big room** - Ousterhout's deep modules, `io.Writer`, deep vs shallow `Store`, information leakage |
 | 2 | 10 | **Composition, not inheritance** - Go's toolbox, embedding is a field + a generated forwarder, the receiver is the inner value (live demo), interfaces for dispatch, wrapping, embedding good/bad |
-| 3 | 11 | **Interfaces** - implicit satisfaction, accept interfaces/return structs, ask for the least, compose small interfaces client-side, discover don't design, the typed-nil trap (live demo) |
-| 4 | 11 | **Packages** - the package as Go's unit of design, naming as capability, how to carve one, dismantling `utils`, the `boot.Database` singleton story, no package state, zero values + `internal/`, thin `main`, by feature not by layer |
-| 5 | 8 | **Dependencies** - DI is parameters, build in layers at the top, the option pattern when constructors grow, fake only the seams |
+| 3 | 10 | **Interfaces** - implicit satisfaction, accept interfaces/return structs, ask for the least, compose small interfaces client-side, discover don't design, the typed-nil trap (live demo) |
+| 4 | 10 | **Packages** - the package as Go's unit of design, naming as capability, how to carve one, dismantling `utils`, the `boot.Database` singleton story, no package state, zero values + `internal/`, thin `main`, by feature not by layer |
+| 5 | 7 | **Dependencies** - DI is parameters, build in layers at the top, the option pattern when constructors grow, fake only the seams |
 | 6 | 7 | **Errors** - values, handle once, add context with `%w`, `errors.Is`/`As`, define errors out of existence |
-| 7 | 6 | **Zooming out** - SOLID mapped to Go, naming in one slide, concurrency in one slide, six takeaways, sources |
+| 7 | 6 | **Testing** - table-driven tests, fakes over mock frameworks, the `testing` toolkit (`t.Helper`, `t.Parallel`, `-race`) |
+| 8 | 5 | **Zooming out** - SOLID mapped to Go, naming in one slide, concurrency in one slide, six takeaways, the review card, sources |
 
 Two slides run live (`+exec`, needs `-x`, press `Ctrl+E`):
 

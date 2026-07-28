@@ -59,7 +59,7 @@ If you are choosing between an interesting solution and a boring one, pick borin
 
 <!-- jump_to_middle -->
 
-Part 1 · 6 min
+Part 1 · 5 min
 ---
 # A small door to a big room
 
@@ -353,7 +353,7 @@ part of what callers may use?** Yes, embed it. No, give it a name: `mu sync.Mute
 
 <!-- jump_to_middle -->
 
-Part 3 · 11 min
+Part 3 · 10 min
 ---
 # Interfaces
 
@@ -599,7 +599,7 @@ An interface holds **two things**: a type and a value. It is `nil` only when **b
 
 <!-- jump_to_middle -->
 
-Part 4 · 11 min
+Part 4 · 10 min
 ---
 # Packages
 
@@ -887,7 +887,7 @@ edits three packages, and `models` becomes the package everything depends on.
 
 <!-- jump_to_middle -->
 
-Part 5 · 8 min
+Part 5 · 7 min
 ---
 # Dependencies
 
@@ -1242,6 +1242,107 @@ doesn't have to ask every time.
 
 Part 7 · 6 min
 ---
+# Testing
+
+<!-- end_slide -->
+
+# Table-driven tests: the Go default
+
+One test body, many cases. Adding a case is adding a row.
+
+```go
+func TestTruncate(t *testing.T) {
+    tests := map[string]struct {
+        in   string
+        n    int
+        want string
+    }{
+        "shorter than limit": {in: "hi", n: 5, want: "hi"},
+        "exactly at limit":   {in: "hello", n: 5, want: "hello"},
+        "over the limit":     {in: "hello!", n: 5, want: "hello"},
+        "zero limit":         {in: "hi", n: 0, want: ""},
+    }
+
+    for name, tc := range tests {
+        t.Run(name, func(t *testing.T) {
+            got := Truncate(tc.in, tc.n)
+            if got != tc.want {
+                t.Errorf("Truncate(%q, %d) = %q, want %q",
+                    tc.in, tc.n, got, tc.want)
+            }
+        })
+    }
+}
+```
+
+<!-- speaker_note: 'Three things to point at. The map: case names become subtest names, so a failure reads TestTruncate/zero_limit and you can run exactly one case with go test -run "TestTruncate/zero". No assertion library: got, want, t.Errorf is the whole convention - the stdlib way scales and everyone can read it. And the edge cases are ROWS, so the review question "did you test zero?" is answered by scanning the table. For struct comparisons, cmp.Diff from go-cmp is the one external helper worth knowing.' -->
+
+<!-- end_slide -->
+
+# Fakes, not mock frameworks
+
+You already did the hard part - the function asks for a **small interface**:
+
+```go
+type userGetter interface {
+    Get(ctx context.Context, id string) (User, error)
+}
+```
+
+<!-- pause -->
+
+So the test double is four lines. No codegen, no framework, no DSL:
+
+```go
+type fakeGetter struct {
+    user User
+    err  error
+}
+
+func (f fakeGetter) Get(context.Context, string) (User, error) {
+    return f.user, f.err
+}
+```
+
+<!-- pause -->
+
+```go
+err := Welcome(fakeGetter{err: ErrNotFound}, "u1")   // failure case: trivial
+```
+
+<!-- pause -->
+
+If the fake is painful to write, the message is not "use mockgen" -
+it is **"my interface is too big."** The pain is design feedback.
+
+<!-- speaker_note: 'This closes the loop with part 3: small interfaces exist FOR this moment. A generated mock with expectation DSLs tests how the code talks; a fake tests what the code does - and the fake survives refactors that reorder calls. When someone reaches for mockgen because the interface has 14 methods, the fix is upstream. Fakes with a bit of state - a map-backed in-memory store - are fine too and often nicer than per-test stubs.' -->
+
+<!-- end_slide -->
+
+# The testing toolkit, in one slide
+
+| | |
+| --- | --- |
+| `t.Run(name, ...)` | subtests: name every case, run one with `-run` |
+| `t.Helper()` | first line of every test helper - failures point at the caller |
+| `t.Parallel()` | free speedup - and it *proves* your code has no globals |
+| `t.TempDir()` | a real directory, cleaned up for you |
+| `t.Cleanup(fn)` | defer for tests - runs even when subtests fail |
+| `go test -race ./...` | in CI, always. Races are invisible until 3am |
+
+<!-- pause -->
+
+Note what `t.Parallel()` just bought you: it only works because there is
+**no package-level state**. Testability was the design lesson all along.
+
+<!-- speaker_note: 'Do not read the table - point at t.Parallel and make the callback to the singleton slide: if your tests cannot run in parallel, you have a global, and now you know where. t.Helper is the one nobody knows: without it, a failing assertion helper reports the line inside the helper instead of the test that called it. Close with: none of these require a library. The stdlib testing package is a deep module.' -->
+
+<!-- end_slide -->
+
+<!-- jump_to_middle -->
+
+Part 8 · 5 min
+---
 # Zooming out
 
 <!-- end_slide -->
@@ -1349,6 +1450,31 @@ behind it is the benefit.
 <!-- pause -->
 
 > "Clear is better than clever."
+
+<!-- end_slide -->
+
+# The review card - quote these in PRs
+
+| One-liner | Where it came from |
+| --- | --- |
+| The bigger the interface, the weaker the abstraction | Go Proverbs |
+| Accept interfaces, return structs | Part 3 |
+| Never create an interface until you need it | Part 3 |
+| Name a package for what it provides, not what it contains | Part 4 |
+| A package-level `var` is an invisible argument | Part 4 |
+| If a missing dependency isn't a compile error, move it earlier | Part 5 |
+| Required = positional. Optional = options | Part 5 |
+| Log at the boundary, add context in the middle, never both | Part 6 |
+| Ask what happened (`errors.Is`), don't read the message | Part 6 |
+| If the fake is painful, the interface is too big | Part 7 |
+| Never start a goroutine without knowing how it stops | Part 8 |
+| Clear is better than clever | Go Proverbs |
+
+<!-- pause -->
+
+Screenshot this one.
+
+<!-- speaker_note: 'The whole talk in twelve quotable lines - tell them these are legitimate review comments, with a slide behind each one if anyone asks why. Then move on; do not read the table aloud.' -->
 
 <!-- end_slide -->
 
