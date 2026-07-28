@@ -1437,13 +1437,28 @@ Two rules that prevent most incidents:
 
 <!-- pause -->
 
+Rule 1, in code - the caller cancels the context, and that is what stops it:
+
 ```go
-g, ctx := errgroup.WithContext(ctx)
-g.SetLimit(8)                    // bounded: don't overload your own database
-for _, id := range ids {
-    g.Go(func() error { return process(ctx, id) })
+func (s *Service) Sweep(ctx context.Context) error {
+    tick := time.NewTicker(time.Minute)
+    defer tick.Stop()
+
+    for {
+        select {
+        case <-ctx.Done():       // cancelled, or deadline hit: we stop
+            return ctx.Err()
+        case <-tick.C:
+            s.sweepOnce(ctx)
+        }
+    }
 }
-return g.Wait()                  // first error cancels the rest
+```
+
+```go
+ctx, cancel := context.WithCancel(context.Background())
+go s.Sweep(ctx)   // who stops it? whoever holds cancel. when? cancel()
+defer cancel()
 ```
 
 <!-- pause -->
@@ -1451,7 +1466,7 @@ return g.Wait()                  // first error cancels the rest
 `go test -race ./...` in CI, always. A mutex protects **data**; a channel hands
 **ownership** over.
 
-<!-- speaker_note: 'The unbounded version of that loop - go for every row of a query - is a real outage shape, so SetLimit is the line to point at. If asked about concurrency vs parallelism: concurrency is how the program is structured, parallelism is things literally running at once; a concurrent program is still correct on one CPU.' -->
+<!-- speaker_note: 'This is the canonical stoppable goroutine: every worker loop in every service is this shape - a for-select on ctx.Done plus the actual work. Both rule-1 questions have visible answers: what makes it return is ctx.Done, who waits is whoever called it. When they need a bounded fan-out later, point them at errgroup.WithContext with SetLimit - same idea, first error cancels the rest; the unbounded go-per-row loop is a real outage shape. If asked about concurrency vs parallelism: concurrency is how the program is structured, parallelism is things literally running at once; a concurrent program is still correct on one CPU.' -->
 
 <!-- end_slide -->
 
