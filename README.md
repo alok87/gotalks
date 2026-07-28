@@ -11,16 +11,14 @@ Terminal talks, built with [presenterm](https://github.com/mfontanini/presenterm
 The talk files are plain markdown - GitHub renders them readable as-is
 (presenterm directives like `<!-- pause -->` are invisible comments).
 
-## Present
+## Run
 
 ```sh
 brew install presenterm
-presenterm -x talks/go-software-design.md   # -x enables the live-runnable snippets
+presenterm -x talks/go-software-design.md
 ```
 
-Needs a terminal of at least **120x40**. `Ctrl+E` runs the code on the two demo slides.
-Speaker notes: `presenterm -x --publish-speaker-notes <talk>` on the projector,
-`presenterm --listen-speaker-notes <talk>` on your laptop.
+Terminal must be at least 120x40. `Ctrl+E` runs the code on the demo slides.
 
 ## Verify after editing
 
