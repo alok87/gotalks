@@ -85,11 +85,23 @@ in-memory buffers, HTTP responses, `os.Stdout`.
 
 <!-- pause -->
 
+The door is not only an interface - it is **any public contract**. A struct's
+exported methods are a door too:
+
+```go
+client := &http.Client{}
+resp, err := client.Do(req)   // one method you call
+```
+
+Behind `Do`: connection pooling, TLS, redirects, cookies, proxies, HTTP/2.
+
+<!-- pause -->
+
 > "The bigger the interface, the weaker the abstraction." - Go Proverbs
 
 Same idea, found twice. Small door, big room. Ousterhout calls it a **deep module**.
 
-<!-- speaker_note: 'This slide is the spine of the whole talk - everything later is an application of it. Cost is what a caller has to learn and what you can never change again; benefit is how much work you saved them. io.Writer is the deepest module in Go: one method, tens of thousands of implementations. The opposite is a shallow module: 40 methods that each do almost nothing, so the caller has to learn all 40 and you saved them nothing.' -->
+<!-- speaker_note: 'This slide is the spine of the whole talk - everything later is an application of it. Cost is what a caller has to learn and what you can never change again; benefit is how much work you saved them. io.Writer is the deepest module in Go: one method, tens of thousands of implementations. Generalise it out loud: the door is whatever you export - an interface''s method set, a struct''s exported methods, a package''s exported names. http.Client is a struct, and Do is still a one-method door hiding half of net/http. Ousterhout''s word module covers all of these. The opposite is a shallow module: 40 methods that each do almost nothing, so the caller has to learn all 40 and you saved them nothing.' -->
 
 <!-- end_slide -->
 
