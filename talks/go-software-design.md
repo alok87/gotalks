@@ -144,7 +144,7 @@ stop using SQL. That is the cost of a big door.
 
 <!-- jump_to_middle -->
 
-Part 2 · 11 min
+Part 2 · 12 min
 ---
 # Composition, not inheritance
 
@@ -191,6 +191,50 @@ Every new kind of car is a **new part, plugged into the same Car**.
 The tree is decided once, forever. The parts are chosen at construction.
 
 <!-- speaker_note: 'Let the hybrid question land before revealing the second half - the room will feel the taxonomy break. Inheritance forces you to predict the future shape of the family tree, and you get it wrong: hybrid needs two branches at once, which is the diamond problem. Composition never asked the question - a hybrid is a car with a different engine. Also worth saying: the tree ALSO forced ElectricCar to inherit everything Car has, fields included; with composition the Car only holds what you put in it. Go removed inheritance so this is not even a choice you have to argue about in review.' -->
+
+<!-- end_slide -->
+
+# Embedding IS composition - minus the typing
+
+Both of these mean the same thing: **a Car has an Engine.**
+
+```go
+type Car struct {
+    engine Engine                 // composition: a named part
+}
+
+func (c *Car) Start() error {
+    return c.engine.Start()       // you write the forwarding
+}
+```
+
+```go
+type Car struct {
+    Engine                        // embedding: same design,
+}                                 // forwarding written for you
+```
+
+Embedding is not a different idea - it is composition where the compiler writes
+the forwarding method and lets you skip the field name. **Default to the named
+field.** Embed only when the part should be visible in your API.
+
+<!-- pause -->
+
+## The real benefit: change stays local
+
+- **Swap the part, keep the whole**: real engine in prod, fake in tests,
+  a wrapped one for logging - `Car` never changes.
+- **A part's internals can change freely** - `Car` depends on `Engine`
+  the interface, not on how any engine works inside.
+- **A new combination is a constructor call**, not a new type.
+
+<!-- pause -->
+
+This is why Go shipped **without** inheritance: a subclass is coupled to its
+parent's internals, so one parent edit ripples through every descendant.
+Parts don't ripple. At a million lines, that is the whole ballgame.
+
+<!-- speaker_note: 'The one-sentence version to say out loud: embedding is spelling, composition is the design. If they take one rule: named field by default, embed only to expose. On why Go chose it - the fragile base class problem: in a hierarchy you cannot change a parent without auditing every child that overrides or depends on its internals, and Go was designed for codebases where that audit is impossible. Two composition bad patterns to name here or in review: the train wreck c.Engine.Pump.Injector.Prime() - talk to your own parts, not your parts parts - and the 12-part god struct, which is 12 jobs wearing one name.' -->
 
 <!-- end_slide -->
 
@@ -426,13 +470,16 @@ type Registry struct {
 One question decides it: **would you list the embedded type in this type's docs, as
 part of what callers may use?** Yes, embed it. No, give it a name: `mu sync.Mutex`.
 
+Two more to watch for: the **train wreck** - `c.Engine.Pump.Injector.Prime()`,
+talk to your *own* parts only - and the **12-part god struct**: 12 parts is 12 jobs.
+
 <!-- speaker_note: 'Left: shared audit fields is the classic good embed, and embedding an interface to decorate one method is the best use in the language. Right: BaseModel expecting an override silently uses the inner method - we just proved that; Utils makes every helper part of your public surface; and the mutex one is subtle but real - any caller can now lock your internals forever and you can never remove it without breaking them. Anything you embed is yours to support forever.' -->
 
 <!-- end_slide -->
 
 <!-- jump_to_middle -->
 
-Part 3 · 10 min
+Part 3 · 9 min
 ---
 # Interfaces
 
