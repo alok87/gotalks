@@ -692,12 +692,10 @@ and you have to guess right.
 
 1. Write the concrete type
 2. Use it directly
-3. When a caller needs abstraction,
-   **it** declares the interface -
-   and your type already fits
+3. The **caller** declares the interface
 
-Abstraction is **discovered** at the
-point of use.
+Your type already fits. Abstraction is
+**discovered** at the point of use.
 
 <!-- reset_layout -->
 
