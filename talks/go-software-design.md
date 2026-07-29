@@ -59,7 +59,7 @@ If you are choosing between an interesting solution and a boring one, pick borin
 
 <!-- jump_to_middle -->
 
-Part 1 · 5 min
+Part 1 · 4 min
 ---
 # A small door to a big room
 
@@ -144,9 +144,53 @@ stop using SQL. That is the cost of a big door.
 
 <!-- jump_to_middle -->
 
-Part 2 · 10 min
+Part 2 · 11 min
 ---
 # Composition, not inheritance
+
+<!-- end_slide -->
+
+# Inheritance vs composition, with a car
+
+**Inheritance** answers "what *is* it?" - you build a family tree:
+
+```text
+Vehicle
+└── Car
+    ├── PetrolCar
+    └── ElectricCar      ← and a hybrid goes... where?
+```
+
+Every new kind of car is a **new branch**. Shared behaviour lives up the tree,
+and every branch drags all of it along - fuel tanks and all.
+
+<!-- pause -->
+
+**Composition** answers "what is it *made of*?" - you build from parts:
+
+```go
+type Engine interface {
+    Start() error
+}
+
+type Car struct {
+    engine Engine     // a car HAS an engine
+    wheels [4]Wheel
+}
+```
+
+```go
+petrol := NewCar(PetrolEngine{})
+ev     := NewCar(ElectricEngine{})
+hybrid := NewCar(HybridEngine{petrol, battery})   // just another part
+```
+
+<!-- pause -->
+
+Every new kind of car is a **new part, plugged into the same Car**.
+The tree is decided once, forever. The parts are chosen at construction.
+
+<!-- speaker_note: 'Let the hybrid question land before revealing the second half - the room will feel the taxonomy break. Inheritance forces you to predict the future shape of the family tree, and you get it wrong: hybrid needs two branches at once, which is the diamond problem. Composition never asked the question - a hybrid is a car with a different engine. Also worth saying: the tree ALSO forced ElectricCar to inherit everything Car has, fields included; with composition the Car only holds what you put in it. Go removed inheritance so this is not even a choice you have to argue about in review.' -->
 
 <!-- end_slide -->
 
