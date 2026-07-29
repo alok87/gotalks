@@ -669,9 +669,51 @@ type userReadWriter interface {
 
 <!-- end_slide -->
 
+# Don't think in interfaces. Discover them.
+
+The workflow you learned elsewhere does not transfer:
+
+<!-- column_layout: [1, 1] -->
+
+<!-- column: 0 -->
+
+## Java: interface first
+
+1. Define the interface
+2. `implements` it
+3. Every caller uses the interface
+
+Abstraction is **planned up front** -
+and you have to guess right.
+
+<!-- column: 1 -->
+
+## Go: interface last
+
+1. Write the concrete type
+2. Use it directly
+3. When a caller needs abstraction,
+   **it** declares the interface -
+   and your type already fits
+
+Abstraction is **discovered** at the
+point of use.
+
+<!-- reset_layout -->
+
+<!-- pause -->
+
+Nobody has to guess the future, because satisfaction is **implicit**: the compiler
+checks the method set, not a declared relationship. Go asks "can you do it?" -
+never "did you promise to?"
+
+<!-- speaker_note: 'Capability over identity again: structural typing means the compiler checks what a type can DO, nominal typing checks what it DECLARED - and all of it is still compile-time, no runtime cost. The Java workflow exists for a reason THERE: without implements-at-declaration a Java class can never retrofit an interface, so you must plan ahead. Go removed the constraint, so carrying the habit over produces pure ceremony - which is the next slide.' -->
+
+<!-- end_slide -->
+
 # Write the type first. Find the interface later.
 
-A shape you will see in code review:
+A shape you will see in code review - the Java workflow, transplanted:
 
 ```text
 user/
